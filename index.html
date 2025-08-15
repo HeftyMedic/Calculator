@@ -44,7 +44,7 @@
     .cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
     .btn{padding:10px 14px;border-radius:14px;border:1px solid var(--accent);background:transparent;color:var(--text);cursor:pointer}
     .btn.primary{background:var(--brand);border-color:var(--brand);color:#001A2E}
-    .branding{background:color-mix(in srgb, var(--card) 85%, black);border-radius:var(--radius);padding:20px;margin-top:24px}
+    
     .logo{width:88px;height:88px;object-fit:contain;display:block;margin:0 auto 10px;filter:drop-shadow(0 6px 22px rgba(116,197,232,.35))}
     a{color:var(--brand)}
     code{background:#0b1e36;border:1px solid #123655;color:#cfeeff;padding:2px 6px;border-radius:8px}
@@ -181,14 +181,7 @@
         </section>
       </div>
 
-      <section class="branding">
-        <h3 style="margin-top:0">Make it yours</h3>
-        <ul>
-          <li>Host your logo and set: <code>window.APP_CONFIG.logoUrl = "https://yourcdn.com/heftymedic-logo.png"</code></li>
-          <li>Set the displayed brand name: <code>window.APP_CONFIG.brandName = "HeftyMedic"</code></li>
-          <li>Deploy by dragging this <strong>index.html</strong> to <a href="https://app.netlify.com/drop" target="_blank" rel="noreferrer">Netlify Drop</a>, then add the URL to Linktree.</li>
-        </ul>
-      </section>
+      
     </div>
   </div>
 
@@ -196,7 +189,7 @@
     // --- CONFIG YOU CAN EDIT ---
     window.APP_CONFIG = {
       brandName: "HeftyMedic",
-      logoUrl: "LOGO.png", // e.g., "https://yourcdn.com/heftymedic-logo.png"
+      logoUrl: "", // e.g., "https://yourcdn.com/heftymedic-logo.png"
     };
 
     // Helpers
@@ -310,3 +303,4 @@
   </script>
 </body>
 </html>
+
