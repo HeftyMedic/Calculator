@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HeftyMedic Calorie & Macro Calculator</title>
+  <meta name="description" content="High-protein (30/40/30) calorie & macro calculator by HeftyMedic." />
+  <style>
+    :root{
+      --bg:#0B2A4A;      /* deep navy */
+      --card:#12375E;    /* card navy */
+      --text:#FFFFFF;    /* text */
+      --brand:#5EC0E6;   /* brand blue */
+      --accent:#74C5E8;  /* accent blue */
+      --muted:#2A4668;   /* borders */
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;background:var(--bg);color:var(--text)}
+    .wrap{max-width:960px;margin:0 auto;padding:24px;min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .container{width:100%}
+    .badge{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border-radius:999px;background:color-mix(in srgb, var(--brand) 22%, transparent)}
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent)}
+    h1{margin:12px 0 0;font-size:clamp(24px,3.6vw,36px)}
+    p.muted{opacity:.8;margin:6px 0 0}
+    .grid{display:grid;gap:24px;margin-top:24px}
+    @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+    .card{background:var(--card);border:1px solid var(--muted);border-radius:var(--radius);padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    label{font-size:13px;opacity:.9;display:block;margin-bottom:6px}
+    input,select,button{font-size:14px}
+    input,select{width:100%;padding:10px 12px;border-radius:14px;border:1px solid var(--muted);background:#0B2A4A;color:var(--text);outline:none}
+    .row{display:grid;gap:12px}
+    .row.two{grid-template-columns:1fr 1fr}
+    .row.three{grid-template-columns:repeat(3,1fr)}
+    .seg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .seg button{padding:10px 12px;border-radius:14px;border:1px solid var(--muted);background:#0B2A4A;color:var(--text);opacity:.85;cursor:pointer}
+    .seg button.active{background:color-mix(in srgb, var(--brand) 22%, transparent);border-color:var(--brand);opacity:1}
+    .metric{border:1px solid var(--muted);border-radius:16px;padding:14px}
+    .metric .t{font-size:13px;opacity:.9}
+    .metric .v{font-size:22px;font-weight:700}
+    .target{border:1px solid color-mix(in srgb, var(--brand) 45%, transparent);border-radius:16px;padding:16px;margin-top:12px}
+    .macros{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .macro{border:1px solid var(--muted);border-radius:16px;padding:14px}
+    .cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .btn{padding:10px 14px;border-radius:14px;border:1px solid var(--accent);background:transparent;color:var(--text);cursor:pointer}
+    .btn.primary{background:var(--brand);border-color:var(--brand);color:#001A2E}
+    .branding{background:color-mix(in srgb, var(--card) 85%, black);border-radius:var(--radius);padding:20px;margin-top:24px}
+    .logo{width:88px;height:88px;object-fit:contain;display:block;margin:0 auto 10px;filter:drop-shadow(0 6px 22px rgba(116,197,232,.35))}
+    a{color:var(--brand)}
+    code{background:#0b1e36;border:1px solid #123655;color:#cfeeff;padding:2px 6px;border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="container">
+      <!-- LOGO (set the data-url below to your hosted image) -->
+      <img id="logo" class="logo" alt="HeftyMedic logo" />
+
+      <div class="badge"><span class="dot"></span><span id="brandName">HeftyMedic</span></div>
+      <h1>Calorie & TDEE Calculator</h1>
+      <p class="muted">Mifflin–St Jeor with activity multipliers. High‑protein split (30% carbs · 40% protein · 30% fat). For education only.</p>
+
+      <div class="grid">
+        <!-- INPUTS -->
+        <section class="card">
+          <h2 style="margin-top:0;font-size:18px">Your Details</h2>
+
+          <label>Units</label>
+          <div class="seg" id="unitSeg">
+            <button data-val="metric" class="active">Metric (kg, cm)</button>
+            <button data-val="imperial">Imperial (lb, ft/in)</button>
+          </div>
+
+          <div class="row two" style="margin-top:12px">
+            <div>
+              <label>Sex</label>
+              <div class="seg" id="sexSeg">
+                <button data-val="female" class="active">Female</button>
+                <button data-val="male">Male</button>
+              </div>
+            </div>
+            <div>
+              <label for="age">Age</label>
+              <input id="age" type="number" min="13" max="100" value="30" />
+            </div>
+          </div>
+
+          <div id="metricRow" class="row two" style="margin-top:12px">
+            <div>
+              <label for="cm">Height (cm)</label>
+              <input id="cm" type="number" min="120" max="250" value="170" />
+            </div>
+            <div>
+              <label for="kg">Weight (kg)</label>
+              <input id="kg" type="number" min="30" max="250" value="65" />
+            </div>
+          </div>
+
+          <div id="imperialRow" class="row three" style="margin-top:12px;display:none">
+            <div>
+              <label for="ft">Height (ft)</label>
+              <input id="ft" type="number" min="3" max="8" value="5" />
+            </div>
+            <div>
+              <label for="inch">Height (in)</label>
+              <input id="inch" type="number" min="0" max="11" value="7" />
+            </div>
+            <div>
+              <label for="lb">Weight (lb)</label>
+              <input id="lb" type="number" min="66" max="550" value="143" />
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="activity">Activity level</label>
+            <select id="activity">
+              <option value="1.2">Sedentary (little or no exercise)</option>
+              <option value="1.375" selected>Light (1–3 days/week)</option>
+              <option value="1.55">Moderate (3–5 days/week)</option>
+              <option value="1.725">Very (6–7 days/week)</option>
+              <option value="1.9">Extra (physical job or 2x/day)</option>
+            </select>
+          </div>
+
+          <div style="margin-top:12px">
+            <label>Goal</label>
+            <div class="seg" id="goalSeg">
+              <button data-val="lose">Lose</button>
+              <button data-val="maintain" class="active">Maintain</button>
+              <button data-val="gain">Gain</button>
+            </div>
+          </div>
+
+          <div id="deltaRow" style="margin-top:12px;display:none">
+            <label for="delta">Daily Calorie <span id="deltaType">Deficit</span> (kcal)</label>
+            <input id="delta" type="number" min="100" max="1000" step="50" value="300" />
+            <p class="muted" style="font-size:12px">Typical range 250–500 kcal/day for gradual change.</p>
+          </div>
+        </section>
+
+        <!-- RESULTS -->
+        <section class="card">
+          <h2 style="margin-top:0;font-size:18px">Results</h2>
+          <div class="row two">
+            <div class="metric">
+              <div class="t">BMR</div>
+              <div class="v" id="bmr">—</div>
+              <div class="t" style="opacity:.7">Basal Metabolic Rate</div>
+            </div>
+            <div class="metric">
+              <div class="t">TDEE</div>
+              <div class="v" id="tdee">—</div>
+              <div class="t" style="opacity:.7" id="actHint">—</div>
+            </div>
+          </div>
+
+          <div class="target">
+            <div class="t">Target calories</div>
+            <div class="v" id="target">—</div>
+            <div class="t" style="opacity:.7">Based on your goal and activity.</div>
+          </div>
+
+          <div style="margin-top:16px">
+            <div class="row two" style="align-items:center">
+              <h3 style="margin:0">Suggested macros</h3>
+              <div class="t" style="text-align:right">30% carbs · 40% protein · 30% fat</div>
+            </div>
+            <div class="macros" style="margin-top:10px">
+              <div class="macro"><div class="t">Carbs</div><div class="v" id="carbs">—</div><div class="t">g/day</div></div>
+              <div class="macro"><div class="t">Protein</div><div class="v" id="protein">—</div><div class="t">g/day</div></div>
+              <div class="macro"><div class="t">Fat</div><div class="v" id="fat">—</div><div class="t">g/day</div></div>
+            </div>
+          </div>
+
+          <div class="cta">
+            <button class="btn primary" id="copyCals">Copy calories</button>
+            <button class="btn" id="shareLink">Share results</button>
+          </div>
+
+          <p class="muted" style="font-size:12px;margin-top:12px">This tool is for education and general wellness. Not medical advice.</p>
+        </section>
+      </div>
+
+      <section class="branding">
+        <h3 style="margin-top:0">Make it yours</h3>
+        <ul>
+          <li>Host your logo and set: <code>window.APP_CONFIG.logoUrl = "https://yourcdn.com/heftymedic-logo.png"</code></li>
+          <li>Set the displayed brand name: <code>window.APP_CONFIG.brandName = "HeftyMedic"</code></li>
+          <li>Deploy by dragging this <strong>index.html</strong> to <a href="https://app.netlify.com/drop" target="_blank" rel="noreferrer">Netlify Drop</a>, then add the URL to Linktree.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // --- CONFIG YOU CAN EDIT ---
+    window.APP_CONFIG = {
+      brandName: "HeftyMedic",
+      logoUrl: "", // e.g., "https://yourcdn.com/heftymedic-logo.png"
+    };
+
+    // Helpers
+    const round = (n, dp=0)=>{const p=Math.pow(10,dp);return Math.round(n*p)/p};
+    const el = id => document.getElementById(id);
+
+    // Elements
+    const unitSeg = document.getElementById('unitSeg');
+    const sexSeg = document.getElementById('sexSeg');
+    const goalSeg = document.getElementById('goalSeg');
+    const metricRow = document.getElementById('metricRow');
+    const imperialRow = document.getElementById('imperialRow');
+
+    const inputs = {
+      age: el('age'), cm: el('cm'), kg: el('kg'), ft: el('ft'), inch: el('inch'), lb: el('lb'),
+      activity: el('activity'), delta: el('delta')
+    };
+
+    const outs = { bmr: el('bmr'), tdee: el('tdee'), target: el('target'), carbs: el('carbs'), protein: el('protein'), fat: el('fat'), actHint: el('actHint') };
+
+    // State
+    const state = { units:'metric', sex:'female', goal:'maintain' };
+
+    // UI init
+    document.getElementById('brandName').textContent = window.APP_CONFIG.brandName || 'HeftyMedic';
+    if(window.APP_CONFIG.logoUrl){
+      const img = document.getElementById('logo');
+      img.src = window.APP_CONFIG.logoUrl;
+      img.style.display = 'block';
+    }
+
+    const setActive = (wrap, val)=>{
+      [...wrap.querySelectorAll('button')].forEach(b=>{
+        b.classList.toggle('active', b.dataset.val===val)
+      });
+    }
+
+    unitSeg.addEventListener('click', e=>{
+      if(e.target.tagName!=='BUTTON') return;
+      state.units = e.target.dataset.val;
+      setActive(unitSeg, state.units);
+      metricRow.style.display = state.units==='metric'? 'grid':'none';
+      imperialRow.style.display = state.units==='imperial'? 'grid':'none';
+      compute();
+    });
+
+    sexSeg.addEventListener('click', e=>{
+      if(e.target.tagName!=='BUTTON') return;
+      state.sex = e.target.dataset.val;
+      setActive(sexSeg, state.sex);
+      compute();
+    });
+
+    goalSeg.addEventListener('click', e=>{
+      if(e.target.tagName!=='BUTTON') return;
+      state.goal = e.target.dataset.val;
+      setActive(goalSeg, state.goal);
+      document.getElementById('deltaRow').style.display = (state.goal==='maintain')? 'none':'block';
+      document.getElementById('deltaType').textContent = state.goal==='lose'? 'Deficit':'Surplus';
+      compute();
+    });
+
+    Object.values(inputs).forEach(inp=> inp.addEventListener('input', compute));
+
+    // Core calculation (Mifflin–St Jeor)
+    function compute(){
+      const age = +inputs.age.value;
+      const activity = +inputs.activity.value;
+      const deltaIn = Math.abs(+inputs.delta.value || 0);
+
+      const heightCm = state.units==='metric' ? (+inputs.cm.value) : ((+inputs.ft.value*12 + +inputs.inch.value) * 2.54);
+      const weightKg = state.units==='metric' ? (+inputs.kg.value) : ((+inputs.lb.value) * 0.45359237);
+
+      const base = 10*weightKg + 6.25*heightCm - 5*age;
+      const bmr = state.sex==='male' ? base + 5 : base - 161;
+      const tdee = bmr * activity;
+
+      const delta = state.goal==='maintain' ? 0 : (state.goal==='lose' ? -deltaIn : deltaIn);
+      const target = tdee + delta;
+
+      // High-protein split: 30% carbs, 40% protein, 30% fat
+      const carbPct = 0.30, proteinPct = 0.40, fatPct = 0.30;
+      const carbsG = target*carbPct/4;
+      const proteinG = target*proteinPct/4;
+      const fatG = target*fatPct/9;
+
+      outs.bmr.textContent = `${round(bmr)} kcal/day`;
+      outs.tdee.textContent = `${round(tdee)} kcal/day`;
+      outs.target.textContent = `${round(target)} kcal/day`;
+      outs.carbs.textContent = `${round(carbsG)}`;
+      outs.protein.textContent = `${round(proteinG)}`;
+      outs.fat.textContent = `${round(fatG)}`;
+      outs.actHint.textContent = document.querySelector(`#activity option[value="${activity}"]`).textContent;
+    }
+
+    // Copy & share helpers
+    document.getElementById('copyCals').addEventListener('click', async ()=>{
+      try{ await navigator.clipboard.writeText(outs.target.textContent); }catch(e){}
+      const btn = document.getElementById('copyCals');
+      const old = btn.textContent; btn.textContent='Copied!'; setTimeout(()=>btn.textContent=old, 1200);
+    });
+
+    document.getElementById('shareLink').addEventListener('click', async ()=>{
+      const url = location.href;
+      const text = `My target: ${outs.target.textContent} — HeftyMedic Calculator`;
+      if(navigator.share){ try{ await navigator.share({title:'HeftyMedic Calculator', text, url}); }catch(e){} }
+      else { try{ await navigator.clipboard.writeText(url); alert('Link copied to clipboard'); }catch(e){} }
+    });
+
+    compute();
+  </script>
+</body>
+</html>
